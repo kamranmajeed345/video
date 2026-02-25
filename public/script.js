@@ -64,6 +64,46 @@ function updateStatus(active) {
   }
 }
 
+// Handle incoming calls - set up BEFORE start button
+myPeer.on('call', call => {
+  if (myStream) {
+    call.answer(myStream)
+    const video = document.createElement('video')
+    call.on('stream', userVideoStream => {
+      addVideoStream(video, userVideoStream)
+    })
+    call.on('close', () => {
+      video.remove()
+    })
+  }
+})
+
+// Handle user connections - set up BEFORE start button
+socket.on('user-connected', userId => {
+  if (myStream) {
+    // Add delay to ensure both peers are ready
+    setTimeout(() => {
+      connectToNewUser(userId, myStream)
+    }, 1000)
+  }
+  userCount++
+  updateUserCount()
+})
+
+// Handle user disconnections
+socket.on('user-disconnected', userId => {
+  if (peers[userId]) {
+    peers[userId].close()
+    userCount--
+    updateUserCount()
+  }
+})
+
+// Join room when peer connection is ready
+myPeer.on('open', id => {
+  socket.emit('join-room', ROOM_ID, id)
+})
+
 // Start call button handler
 startCallBtn.addEventListener('click', () => {
   navigator.mediaDevices.getUserMedia({
@@ -73,20 +113,6 @@ startCallBtn.addEventListener('click', () => {
     myStream = stream
     addVideoStream(myVideo, stream)
     updateStatus(true)
-
-    myPeer.on('call', call => {
-      call.answer(stream)
-      const video = document.createElement('video')
-      call.on('stream', userVideoStream => {
-        addVideoStream(video, userVideoStream)
-      })
-    })
-
-    socket.on('user-connected', userId => {
-      connectToNewUser(userId, stream)
-      userCount++
-      updateUserCount()
-    })
   }).catch(err => {
     console.error('Failed to get media stream:', err)
     alert('Could not access camera/microphone. Please check permissions.')
@@ -105,22 +131,14 @@ endCallBtn.addEventListener('click', () => {
   // Clear video grid
   videoGrid.innerHTML = ''
   
+  // Reset user count
+  userCount = 1
+  updateUserCount()
+  
   updateStatus(false)
   
   // Notify server
   socket.emit('end-call', ROOM_ID)
-})
-
-socket.on('user-disconnected', userId => {
-  if (peers[userId]) {
-    peers[userId].close()
-    userCount--
-    updateUserCount()
-  }
-})
-
-myPeer.on('open', id => {
-  socket.emit('join-room', ROOM_ID, id)
 })
 
 function connectToNewUser(userId, stream) {
