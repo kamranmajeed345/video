@@ -102,6 +102,42 @@
       cursor: not-allowed;
       transform: none;
     }
+
+    #end-call {
+      background: #f44336;
+      color: white;
+    }
+
+    #end-call:hover {
+      background: #da190b;
+      transform: scale(1.05);
+    }
+
+    #mute-btn {
+      background: #FF9800;
+      color: white;
+    }
+
+    #mute-btn:hover {
+      background: #F57C00;
+      transform: scale(1.05);
+    }
+
+    #mute-btn.muted {
+      background: #757575;
+    }
+
+    #volume-up, #volume-down {
+      background: #2196F3;
+      color: white;
+      width: 50px;
+      padding: 15px;
+    }
+
+    #volume-up:hover, #volume-down:hover {
+      background: #0b7dda;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -109,6 +145,18 @@
   <div id="controls">
     <button id="start-call" class="control-btn">
       <span>▶</span> Start Call
+    </button>
+    <button id="mute-btn" class="control-btn" disabled>
+      <span>🔇</span> Mute
+    </button>
+    <button id="volume-down" class="control-btn" disabled>
+      <span>−</span>
+    </button>
+    <button id="volume-up" class="control-btn" disabled>
+      <span>+</span>
+    </button>
+    <button id="end-call" class="control-btn" disabled>
+      <span>■</span> End Call
     </button>
   </div>
 </body>

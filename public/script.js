@@ -1,6 +1,10 @@
 const socket = io('/')
 const videoGrid = document.getElementById('video-grid')
 const startCallBtn = document.getElementById('start-call')
+const endCallBtn = document.getElementById('end-call')
+const muteBtn = document.getElementById('mute-btn')
+const volumeUpBtn = document.getElementById('volume-up')
+const volumeDownBtn = document.getElementById('volume-down')
 
 const myPeer = new Peer(undefined, {
   host: '0.peerjs.com',
@@ -12,6 +16,8 @@ const myVideo = document.createElement('video')
 myVideo.muted = true
 const peers = {}
 let myStream = null
+let isMuted = false
+let currentVolume = 1.0
 
 // Handle incoming calls - set up BEFORE start button
 myPeer.on('call', call => {
@@ -58,9 +64,69 @@ startCallBtn.addEventListener('click', () => {
     myStream = stream
     addVideoStream(myVideo, stream)
     startCallBtn.disabled = true
+    endCallBtn.disabled = false
+    muteBtn.disabled = false
+    volumeUpBtn.disabled = false
+    volumeDownBtn.disabled = false
   }).catch(err => {
     console.error('Failed to get media stream:', err)
     alert('Could not access camera/microphone. Please check permissions.')
+  })
+})
+
+// End call button handler
+endCallBtn.addEventListener('click', () => {
+  if (myStream) {
+    myStream.getTracks().forEach(track => track.stop())
+  }
+  
+  Object.values(peers).forEach(peer => peer.close())
+  videoGrid.innerHTML = ''
+  
+  startCallBtn.disabled = false
+  endCallBtn.disabled = true
+  muteBtn.disabled = true
+  volumeUpBtn.disabled = true
+  volumeDownBtn.disabled = true
+  isMuted = false
+  muteBtn.innerHTML = '<span>🔇</span> Mute'
+  muteBtn.classList.remove('muted')
+})
+
+// Mute button handler
+muteBtn.addEventListener('click', () => {
+  if (myStream) {
+    const audioTrack = myStream.getAudioTracks()[0]
+    if (audioTrack) {
+      audioTrack.enabled = !audioTrack.enabled
+      isMuted = !audioTrack.enabled
+      
+      if (isMuted) {
+        muteBtn.innerHTML = '<span>🔊</span> Unmute'
+        muteBtn.classList.add('muted')
+      } else {
+        muteBtn.innerHTML = '<span>🔇</span> Mute'
+        muteBtn.classList.remove('muted')
+      }
+    }
+  }
+})
+
+// Volume up button handler
+volumeUpBtn.addEventListener('click', () => {
+  const videos = document.querySelectorAll('video:not(:first-child)')
+  currentVolume = Math.min(currentVolume + 0.1, 1.0)
+  videos.forEach(video => {
+    video.volume = currentVolume
+  })
+})
+
+// Volume down button handler
+volumeDownBtn.addEventListener('click', () => {
+  const videos = document.querySelectorAll('video:not(:first-child)')
+  currentVolume = Math.max(currentVolume - 0.1, 0)
+  videos.forEach(video => {
+    video.volume = currentVolume
   })
 })
 
@@ -82,5 +148,6 @@ function addVideoStream(video, stream) {
   video.addEventListener('loadedmetadata', () => {
     video.play()
   })
+  video.volume = currentVolume
   videoGrid.append(video)
 }
