@@ -7,10 +7,17 @@ const { v4: uuidV4 } = require('uuid')
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
+// Home page - room selection
 app.get('/', (req, res) => {
+  res.render('home')
+})
+
+// Create random room
+app.get('/create', (req, res) => {
   res.redirect(`/${uuidV4()}`)
 })
 
+// Join specific room
 app.get('/:room', (req, res) => {
   res.render('room', { roomId: req.params.room })
 })
@@ -26,4 +33,7 @@ io.on('connection', socket => {
   })
 })
 
-server.listen(3000)
+const PORT = process.env.PORT || 3000
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})

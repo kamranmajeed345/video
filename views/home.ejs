@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Call - Select Room</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 32px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 15px;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+      transform: translateY(-2px);
+    }
+
+    .divider {
+      text-align: center;
+      margin: 25px 0;
+      color: #999;
+      position: relative;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: #e0e0e0;
+    }
+
+    .divider::before {
+      left: 0;
+    }
+
+    .divider::after {
+      right: 0;
+    }
+
+    .quick-rooms {
+      margin-top: 30px;
+    }
+
+    .quick-rooms h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .room-btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      color: #333;
+      text-decoration: none;
+      margin: 5px;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+
+    .room-btn:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎥 Video Call</h1>
+    <p>Create or join a video call room</p>
+
+    <div class="input-group">
+      <label for="roomName">Enter Room Name</label>
+      <input type="text" id="roomName" placeholder="e.g., room1, meeting-room, team-call" />
+    </div>
+
+    <button class="btn btn-primary" onclick="joinRoom()">Join Room</button>
+
+    <div class="divider">OR</div>
+
+    <button class="btn btn-secondary" onclick="createRandomRoom()">Create Random Room</button>
+
+    <div class="quick-rooms">
+      <h3>Quick Join:</h3>
+      <a href="/room1" class="room-btn">Room 1</a>
+      <a href="/room2" class="room-btn">Room 2</a>
+      <a href="/room3" class="room-btn">Room 3</a>
+      <a href="/meeting" class="room-btn">Meeting</a>
+    </div>
+  </div>
+
+  <script>
+    function joinRoom() {
+      const roomName = document.getElementById('roomName').value.trim();
+      if (roomName) {
+        window.location.href = `/${roomName}`;
+      } else {
+        alert('Please enter a room name');
+      }
+    }
+
+    function createRandomRoom() {
+      window.location.href = '/create';
+    }
+
+    // Allow Enter key to join room
+    document.getElementById('roomName').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        joinRoom();
+      }
+    });
+  </script>
+</body>
+</html>
